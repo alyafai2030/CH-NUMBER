@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> اختيار الأرقام العشوائية</title>
+    <style>
+        * {
+            margin: 40;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: LBC, sans-serif;
+            padding: 10px;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            margin-top:10px; /* تعديل المسافة بين العنوان والشريط العلوي */
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .controls {
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .controls label {
+            font-size: 16px;
+            align-self: center;
+        }
+
+        .controls input {
+            padding: 8px;
+            font-size: 16px;
+            width: 80px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .controls button {
+            padding: 8px 15px;
+            font-size: 16px;
+            background-color: #ffffff;
+            border: 1px solid #101010;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 10px;
+            width: 100%;
+            max-width: 400px;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .square {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: 10px;
+            border: none;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+            color: #000000;
+        }
+
+        .square:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+            color: #000000;
+        }
+
+        @media (max-width: 400px) {
+            h1 {
+                font-size: 20px;
+            }
+            .controls label {
+                font-size: 14px;
+            }
+            .controls input, .controls button {
+                font-size: 14px;
+            }
+            .square {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!--<h1>تطبيق اختيار الأرقام العشوائية</h1>-->
+    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+        <img src="tc.png" alt="رمز الرماية" style="width: 40px; height: 40px; margin-left: 10px;">
+        <h1 style="text-align: center; color: #333; margin: 0;"> اختيار الأرقام العشوائية</h1>
+    </div>
+    <div class="controls">
+        <label for="numberInput">أدخل عدد المربعات:</label>
+        <input type="number" id="numberInput" min="1">
+        <button onclick="generateSquares()">توليد الأرقام</button>
+    </div>
+
+    <div class="container" id="container"></div>
+
+    <script>
+        const colors = ["#00d2d3", "#48dbfb", "#ff9ff3", "#78e08f","#b71540" ,
+                       "#fad390", "#b8e994", "#cf6a87", "#7bed9f","#ffa502","#8c7ae6"];
+
+        function getRandomColor() {
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        function revealNumber(button) {
+            const number = button.dataset.number;
+            button.textContent = number;
+            button.disabled = true;
+        }
+
+        function generateSquares() {
+            const container = document.getElementById('container');
+            const numSquares = parseInt(document.getElementById('numberInput').value);
+            
+            container.innerHTML = '';
+
+            if (!numSquares || numSquares <= 0) {
+                alert('يرجى إدخال رقم صحيح أكبر من 0');
+                return;
+            }
+
+            const numbers = Array.from({length: numSquares}, (_, i) => i + 1);
+            for (let i = numbers.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
+            }
+
+            numbers.forEach(number => {
+                const button = document.createElement('button');
+                button.className = 'square';
+                button.textContent = '🤔';
+                button.dataset.number = number;
+                button.style.backgroundColor = getRandomColor();
+                button.addEventListener('click', () => revealNumber(button));
+                button.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    revealNumber(button);
+                }, { passive: false });
+                container.appendChild(button);
+            });
+        }
+
+        document.getElementById('numberInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                generateSquares();
+            }
+        });
+    </script>
+</body>
+</html>
