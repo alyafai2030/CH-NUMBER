@@ -9,6 +9,7 @@
             margin: 40;
             padding: 0;
             box-sizing: border-box;
+           
         }
 
         body {
@@ -112,11 +113,13 @@
     <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
         <img src="tc.png" alt="رمز الرماية" style="width: 40px; height: 40px; margin-left: 10px;">
         <h1 style="text-align: center; color: #333; margin: 0;"> اختيار الأرقام العشوائية</h1>
+       
     </div>
     <div class="controls">
-        <label for="numberInput">أدخل عدد المربعات:</label>
-        <input type="number" id="numberInput" min="1">
-        <button onclick="generateSquares()">توليد الأرقام</button>
+        <label for="numberInput">أدخل عدد :</label>
+        <input type="number" id="numberInput" min="1" placeholder="0 ">
+        <button onclick="generateSquares()"> OK </button>
+        <label style="text-align: center; color: #45afec; padding: 10px; font-family: Khayal-2-arphotoshop ; font-size: 12;">محمد اليافعي</label>
     </div>
 
     <div class="container" id="container"></div>
