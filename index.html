@@ -30,7 +30,6 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            
         }
 
         .welcome-container h1 {
@@ -114,9 +113,10 @@
             gap: 10px;
             width: 100%;
             max-width: 400px;
-            max-height: calc(100vh - 100px);
+            max-height: calc(100vh - 150px); /* تعديل الارتفاع لتجنب التعليق */
             overflow-y: auto;
             padding: 10px;
+            -webkit-overflow-scrolling: touch; /* تحسين التمرير على iOS */
         }
 
         .square {
@@ -139,6 +139,7 @@
             opacity: 0.8;
             color: #000000;
         }
+
         .back-btn {
             padding: 10px 20px;
             font-size: 18px;
@@ -184,23 +185,18 @@
     <div class="welcome-container" id="welcomePage">
         <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
             <img src="tc.png" alt="رمز الرماية" style="width: 40px; height: 40px; margin-left: 10px;">
-            <h1 style="margin: 0; "> اختيار الأرقام العشوائية</h1>
+            <h1 style="margin: 0;"> اختيار الأرقام العشوائية</h1>
         </div>
-            
-            <img src="num1.png" alt="رمز الارقام"style="width: 250px; height: 200px; margin:auto; margin-top: 50px;" >
-            <button class="enter-btn" style="margin-top: 70px;" onclick="showMainContent()">الدخول</button>
-            <img src="my5.png" style="width: 70px; height: 70px; margin:auto; margin-top: 150px;">
-        </div>
-       
+        <img src="num1.png" alt="رمز الارقام" style="width: 250px; height: 200px; margin:auto; margin-top: 50px;">
+        <button class="enter-btn" style="margin-top: 70px;" onclick="showMainContent()">الدخول</button>
+        <img src="my5.png" style="width: 70px; height: 70px; margin:auto; margin-top: 150px;">
     </div>
 
     <!-- صفحة اختيار الأرقام -->
     <div class="main-content" id="mainContent">   
-        <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px; ">
-           
+        <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
             <img src="tc.png" alt="رمز الرماية" style="width: 40px; height: 40px; margin-left: 10px;">
             <h1 style="margin: left 270px;">اختيار الأرقام العشوائية</h1>
-           
         </div>
         <div class="controls">
             <label for="numberInput">أدخل عدد :</label>
@@ -227,13 +223,18 @@
 
         function generateSquares() {
             const container = document.getElementById('container');
-            const numSquares = parseInt(document.getElementById('numberInput').value);
+            let numSquares = parseInt(document.getElementById('numberInput').value);
             
             container.innerHTML = '';
 
             if (!numSquares || numSquares <= 0) {
                 alert('يرجى إدخال رقم صحيح أكبر من 0');
                 return;
+            }
+
+            if (numSquares > 50) { // تحديد الحد الأقصى لتحسين الأداء
+                numSquares = 50;
+                alert('الحد الأقصى للأرقام هو 50');
             }
 
             const numbers = Array.from({length: numSquares}, (_, i) => i + 1);
@@ -250,9 +251,8 @@
                 button.style.backgroundColor = getRandomColor();
                 button.addEventListener('click', () => revealNumber(button));
                 button.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
                     revealNumber(button);
-                }, { passive: false });
+                }, { passive: true }); // تحسين التعامل مع اللمس على iOS
                 container.appendChild(button);
             });
         }
@@ -268,11 +268,11 @@
             document.getElementById('welcomePage').style.display = 'none';
             document.getElementById('mainContent').style.display = 'flex';
         }
+
         function showPage(page) {
             if (page === 'home-page') {
                 document.getElementById('mainContent').style.display = 'none';
                 document.getElementById('welcomePage').style.display = 'flex';
-                // مسح المربعات عند العودة إلى الصفحة الرئيسية
                 document.getElementById('container').innerHTML = '';
                 document.getElementById('numberInput').value = '';
             }
