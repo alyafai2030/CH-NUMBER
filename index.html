@@ -3,9 +3,41 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="theme-color" content="#4CAF50">
-    <title>N</title>
+    <title>اختيار الأرقام العشوائية</title>
+    <link rel="apple-touch-icon" href="tc.png">
+
+    <!-- إضافة Manifest داخلي -->
+    <script>
+        const manifestData = {
+            "name": "اختيار الأرقام العشوائية",
+            "short_name": "أرقام عشوائية",
+            "start_url": "/index.html",
+            "display": "standalone",
+            "background_color": "#f0f0f0",
+            "theme_color": "#4CAF50",
+            "description": "تطبيق لاختيار أرقام عشوائية بطريقة ممتعة",
+            "icons": [
+                {
+                    "src": "tc.png",
+                    "sizes": "40x40 192x192 512x512",
+                    "type": "image/png"
+                }
+            ],
+            "lang": "ar",
+            "dir": "rtl",
+            "scope": "/"
+        };
+
+        const manifestString = JSON.stringify(manifestData);
+        const manifestBase64 = btoa(manifestString);
+        const manifestLink = document.createElement('link');
+        manifestLink.rel = 'manifest';
+        manifestLink.href = `data:application/manifest+json;base64,${manifestBase64}`;
+        document.head.appendChild(manifestLink);
+    </script>
+
     <style>
         * {
             margin: 0;
@@ -22,7 +54,6 @@
             align-items: center;
         }
 
-        /* أنماط الصفحة الرئيسية */
         .welcome-container {
             text-align: center;
             padding: 20px;
@@ -30,7 +61,6 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            
         }
 
         .welcome-container h1 {
@@ -55,15 +85,13 @@
             background-color: #4b05fc;
         }
 
-        /* أنماط صفحة اختيار الأرقام */
         .main-content {
             display: none;
             width: 100%;
             padding: 10px;
             flex-direction: column;
             align-items: center;
-            align-items: center;
-            overflow-y: visible; /* التأكد من عدم إخفاء التمرير */
+            overflow-y: visible;
         }
 
         .main-content h1 {
@@ -118,9 +146,9 @@
             max-width: 380px;
             max-height: calc(100vh - 100px);
             overflow-y: auto;
-            -webkit-overflow-scrolling: touch; /* تحسين التمرير على iOS */
+            -webkit-overflow-scrolling: touch;
             padding: 10px;
-            touch-action: pan-y; /* السماح بالتمرير العمودي فقط */
+            touch-action: pan-y;
         }
 
         .square {
@@ -143,6 +171,7 @@
             opacity: 0.8;
             color: #000000;
         }
+
         .back-btn {
             padding: 10px 20px;
             font-size: 18px;
@@ -188,23 +217,18 @@
     <div class="welcome-container" id="welcomePage">
         <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
             <img src="tc.png" alt="رمز الرماية" style="width: 40px; height: 40px; margin-left: 10px;">
-            <h1 style="margin: 0; "> اختيار الارقام العشوائية</h1>
+            <h1 style="margin: 0;">اختيار الأرقام العشوائية</h1>
         </div>
-            
-            <img src="num1.png" alt="رمز الارقام"style="width: 250px; height: 200px; margin:auto; margin-top: 50px;" >
-            <button class="enter-btn" style="margin-top: 70px;" onclick="showMainContent()">الدخول</button>
-            <img src="my5.png" style="width: 70px; height: 70px; margin:auto; margin-top: 150px;">
-        </div>
-       
+        <img src="num1.png" alt="رمز الارقام" style="width: 250px; height: 200px; margin:auto; margin-top: 50px;">
+        <button class="enter-btn" style="margin-top: 70px;" onclick="showMainContent()">الدخول</button>
+        <img src="my5.png" style="width: 70px; height: 70px; margin:auto; margin-top: 150px;">
     </div>
 
     <!-- صفحة اختيار الأرقام -->
     <div class="main-content" id="mainContent">   
-        <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px; ">
-           
+        <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
             <img src="tc.png" alt="رمز الرماية" style="width: 40px; height: 40px; margin-left: 10px;">
-            <h1 style="margin: left 270px;">اختيار الأرقام العشوائية</h1>
-           
+            <h1 style="margin-left: 270px;">اختيار الأرقام العشوائية</h1>
         </div>
         <div class="controls">
             <label for="numberInput">أدخل عدد :</label>
@@ -267,19 +291,67 @@
             }
         });
 
-        // دالة لإظهار المحتوى الرئيسي وإخفاء الصفحة الترحيبية
         function showMainContent() {
             document.getElementById('welcomePage').style.display = 'none';
             document.getElementById('mainContent').style.display = 'flex';
         }
+
         function showPage(page) {
             if (page === 'home-page') {
                 document.getElementById('mainContent').style.display = 'none';
                 document.getElementById('welcomePage').style.display = 'flex';
-                // مسح المربعات عند العودة إلى الصفحة الرئيسية
                 document.getElementById('container').innerHTML = '';
                 document.getElementById('numberInput').value = '';
             }
+        }
+
+        // Service Worker داخلي
+        const swCode = `
+          const CACHE_NAME = 'random-numbers-v1';
+          const urlsToCache = ['/', '/index.html', '/tc.png', '/num1.png', '/my5.png'];
+
+          self.addEventListener('install', event => {
+            event.waitUntil(
+              caches.open(CACHE_NAME)
+                .then(cache => cache.addAll(urlsToCache))
+            );
+          });
+
+          self.addEventListener('fetch', event => {
+            event.respondWith(
+              caches.match(event.request)
+                .then(response => response || fetch(event.request))
+            );
+          });
+
+          self.addEventListener('activate', event => {
+            const cacheWhitelist = [CACHE_NAME];
+            event.waitUntil(
+              caches.keys().then(cacheNames => {
+                return Promise.all(
+                  cacheNames.map(cacheName => {
+                    if (!cacheWhitelist.includes(cacheName)) {
+                      return caches.delete(cacheName);
+                    }
+                  })
+                );
+              })
+            );
+          });
+        `;
+
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', () => {
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            const swUrl = URL.createObjectURL(blob);
+            navigator.serviceWorker.register(swUrl)
+              .then(registration => {
+                console.log('Service Worker مسجل بنجاح:', registration);
+              })
+              .catch(error => {
+                console.log('فشل تسجيل Service Worker:', error);
+              });
+          });
         }
     </script>
 </body>
